@@ -7,7 +7,7 @@ a simple os boot sector<br>
 ~/working/ost$ make play<br>
 即可展示一个最简单的操作系统<br>
 其实这只是一个实模式下的引导扇区（boot sector）<br>
-<br>
+
 ### 关于makefile：
 
 maekfile文件是终端命令的一个集合，帮助我们批量编译程序<br>
