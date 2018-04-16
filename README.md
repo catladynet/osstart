@@ -1,4 +1,4 @@
-## osstart
+# osstart
 
 a simple os boot sector<br>
 在终端下运行：<br>
