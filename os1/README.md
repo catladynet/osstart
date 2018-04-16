@@ -1,6 +1,6 @@
 # osstart1
 a simple os boot sector<br>
-在终端下运行：<br>
+在代码所在目录下终端下运行：<br>
 $ make<br>
 然后运行：<br>
 $ make play<br>
