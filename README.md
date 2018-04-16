@@ -5,7 +5,6 @@ a simple os boot sector<br>
 然后运行：<br>
 ~/working/ostart$ make play<br>
 即可展示一个最简单的操作系统<br>
-其实这只是一个实模式下的引导扇区（boot sector）<br>
 
 #### 编译环境
 $sudo apt-get update<br>
@@ -28,7 +27,3 @@ maekfile文件是终端命令的一个集合，帮助我们批量编译程序<br
 本篇采用AT&T汇编，其为GNU/linux世界通用标准，文件后缀.s，可以用gcc直接编译<br>
 但是网上大量汇编参考代码为Intel标准，文件后缀.asm适合在windows下开发<br>
 两者语法有大量不同之处，熟练后可以相互转化<br>
-
-s.
-
-s
