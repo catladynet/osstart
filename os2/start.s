@@ -17,7 +17,7 @@ start:
         mov %ax, %gs
         mov %ax, %ss
         mov $start, %sp
-        */
+        */#初始化，调试的时候看来好像不需要
         lgdt gdt_ptr
         cli
         in $0x92, %al
@@ -26,7 +26,7 @@ start:
         mov %cr0, %eax
         or $0x01, %al
         mov %eax, %cr0
-        ljmpl $0x08, $start32 #$0x00
+        ljmpl $0x08, $0x00
 gdt_null:
         .desc 0, 0, 0
 gdt_code:
