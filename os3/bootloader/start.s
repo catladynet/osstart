@@ -26,6 +26,11 @@ start:
         or $0x01, %al
         mov %eax, %cr0
         ljmpl $0x08, $0x00
+/*
+ljmp $0x8, $protcseg 
+用0x8作为段选择符，到gdt中去取出gdt[0x8]的值，
+#再加上偏移量$protcseg. 跳转到gdt[0x8] + $protcseg的地址处执行。
+*/
 gdt_null:
         .desc 0, 0, 0
 gdt_code:
