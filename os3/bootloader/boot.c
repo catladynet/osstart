@@ -2,16 +2,13 @@
 #define SECTSIZE 512
 
 void bootMain(void) {
-	void (*elf)(void);
-	// loading sector 1 to memory
-	elf();
-
 	unsigned int sceno = 1;
-	unsigned long va = 0xa0000;
+	unsigned long va = 0x8c00;
 	
 	readSect((void*)va, sceno);
-	while(1);	
-	asm volatile("jmp 0xa0000");
+	
+	asm volatile("jmp 0x8c00");
+	while(1);
 }
 
 void waitDisk(void) { // waiting for disk

@@ -1,60 +1,50 @@
-        jmp start
 .text
 .code16
-.macro .desc base, limit, attr
-.word (\limit) & 0xFFFF
-.word (\base) & 0xFFFF
-.byte ((\base) >> 0x10) & 0xFF
-.word (((\limit) >> 0x08) & 0x0F00) | ((\attr) & 0xF0FF)
-.byte ((\base) >> 0x18) & 0xFF
-.endm
 .global start
 start:
-        mov %cs, %ax
-        mov %ax, %ds
-        mov %ax, %es
-        mov %ax, %fs
-        mov %ax, %gs
-        mov %ax, %ss
-        mov $start, %sp
-        lgdt gdt_ptr
-        cli
-        in $0x92, %al
-        or $0x02, %al
-        out %al, $0x92
-        mov %cr0, %eax
-        or $0x01, %al
-        mov %eax, %cr0
-        ljmpl $0x08, $0x00
-/*
-ljmp $0x8, $protcseg 
-用0x8作为段选择符，到gdt中去取出gdt[0x8]的值，
-#再加上偏移量$protcseg. 跳转到gdt[0x8] + $protcseg的地址处执行。
-*/
-gdt_null:
-        .desc 0, 0, 0
-gdt_code:
-        .desc _start32_offset, _start32_length, 0x4098
-gdt_video:
-        .desc 0xB8000, 0xFFFF, 0x92
-gdt_ptr:
-        .word . - gdt_null - 1
-        .long gdt_null
-.equ SelectorVideo, gdt_video - gdt_null
+        movw $0x0000, %ax               #屏幕清零
+        int  $0x10                      #中断调用
+        cli                             #关闭中断
+        inb $0x92, %al                  #启动A20总线
+        orb $0x02, %al
+        outb %al, $0x92
+        data32 addr32 lgdt gdtDesc      #加载GDTR
+        movl %cr0, %eax                 #启动保护模式
+        orb $0x01, %al
+        movl %eax, %cr0
+        data32 ljmp $0x08, $start32     #长跳转切换至保护模式
 
 .code32
 start32:
-.equ _start32_offset, . - start + 0x7C00
-
         movw $SelectorVideo, %ax
-	movw %ax, %gs
-        movl $((80*5+0)*2), %edi                #在第5行第0列打印
-        movb $0x0c, %ah                         #黑底红字
-        movb $72, %al                           #72为H的ASCII码
-        movw %ax, %gs:(%edi)                    #写显存   
+	    movw %ax, %gs
 
-        jmp bootMain 
+        movw $SelectorCode, %ax
+	    movw %ax, %es
+        movw %ax, %fs
+        movw $SelectorData, %ax
+        movw %ax, %ds
+           
+        jmp bootMain                    #跳转至bootMain函数 定义于boot.c
 1:      hlt
-        jmp 1b   
+        jmp 1b  
 
-.equ _start32_length, . - start32 - 1
+gdt:
+        .word 0,0                       #GDT第一个表项必须为空
+        .byte 0,0,0,0
+gdt_code:
+        .word 0xffff,0                  #代码段描述符
+        .byte 0,0x9a,0xcf,0
+gdt_data:       
+        .word 0xffff,0                  #数据段描述符
+        .byte 0,0x92,0xcf,0
+gdt_video:        
+        .word 0xffff,0x8000             #视频段描述符
+        .byte 0x0b,0x92,0xcf,0
+
+gdtDesc:
+        .word (gdtDesc - gdt -1)
+        .long gdt
+.equ SelectorCode,  gdt_code  - gdt
+.equ SelectorData,  gdt_code  - gdt
+.equ SelectorVideo, gdt_video - gdt
