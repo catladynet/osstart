@@ -1,6 +1,11 @@
 # osstart
 本项目是操作系统入门，最终实现一个简单的操作系统<br>
 分为若干步，循序渐进<br>
+查看每个文件夹的教程README<br>
+[#####os1](https://github.com/catladynet/osstart/tree/master/os1)
+实模式
+[#####os2](https://github.com/catladynet/osstart/tree/master/os2)
+跳入保护模式
 
 #### 实验环境
 自制OS的CPU：Intel 80386<br>
