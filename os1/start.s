@@ -3,7 +3,7 @@
 .code16                       #指明16位代码（实模式）
 start:
         movw $0x0000, %ax     #屏幕清零
-        int  $0x10            #中断调用
+        int  $0x10            #使用BIOS第0x10号中断
         movw $message, %bp    #字符串地址传送给bp
         movw $13, %cx         #输出的消息有13个字符      
         movw $0x1301, %ax     #AH=0x13 打印字符串                  
