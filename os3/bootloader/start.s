@@ -1,6 +1,6 @@
 .text
 .code16
-.global start
+.global start                           #global能让编译器能识别到过程块start
 start:
         movw $0x0000, %ax               #屏幕清零
         int  $0x10                      #中断调用
@@ -16,18 +16,16 @@ start:
 
 .code32
 start32:
-        movw $SelectorVideo, %ax
-	    movw %ax, %gs
-
         movw $SelectorCode, %ax
-	    movw %ax, %es
+	movw %ax, %es
         movw %ax, %fs
         movw $SelectorData, %ax
-        movw %ax, %ds
-           
+        movw %ax, %ds                   #初始化es，fs，ds等
+
+        movw $SelectorVideo, %ax        #设置视频段寄存器，指向视频段描述符
+	movw %ax, %gs
+          
         jmp bootMain                    #跳转至bootMain函数 定义于boot.c
-1:      hlt
-        jmp 1b  
 
 gdt:
         .word 0,0                       #GDT第一个表项必须为空
@@ -45,6 +43,6 @@ gdt_video:
 gdtDesc:
         .word (gdtDesc - gdt -1)
         .long gdt
-.equ SelectorCode,  gdt_code  - gdt
-.equ SelectorData,  gdt_code  - gdt
-.equ SelectorVideo, gdt_video - gdt
+.equ SelectorCode,  gdt_code  - gdt     #代码段选择子
+.equ SelectorData,  gdt_code  - gdt     #数据段选择子
+.equ SelectorVideo, gdt_video - gdt     #视频段选择子
