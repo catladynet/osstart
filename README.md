@@ -6,6 +6,9 @@
 实模式<br>
 ### [OS2](https://github.com/catladynet/osstart/tree/master/os2)
 跳入保护模式<br>
+### [OS3](https://github.com/catladynet/osstart/tree/master/os3)
+加载磁盘映像到内存<br>
+
 
 #### 实验环境
 自制OS的CPU：Intel 80386<br>
