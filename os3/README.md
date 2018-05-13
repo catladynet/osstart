@@ -2,7 +2,7 @@
 第三个任务：在保护模式中加载一个磁盘中的程序<br>
 
 <h3>代码框架 Frame</h3>
-<pre><code>+lab1
+<pre><code>
 |---+bootloader
 |   |---boot.h                          #磁盘I/O接口
 |   |---boot.c                          #加载磁盘上的用户程序
