@@ -1,26 +1,33 @@
 #include "boot.h"
+#include <string.h>
+
 #define SECTSIZE 512
+static void (*p_kern)();
+static int SectNum = 200;
 
 void bootMain(void) {
-	/*观察app里的makefile文件，可以看到将start程序段写到了从0x8c00位置开始处。
-	0x8c00表示程序的线性地址空间，但是未加载前，这段代码存储在磁盘中。
-	开机时只有磁盘第一个扇区（0号扇区）——也就是启动扇区，被装载到内存。
-	一个扇区512字节，start程序段被编译到了紧接着启动扇区的第二个扇区（1号扇区）。
-	本段程序的作用是将app中的start程序段从磁盘装载到内存里运行*/
-	unsigned int sceno = 1;			//设置要读写的磁盘扇区号为1，即第二个磁盘扇区
-	unsigned long va = 0x8c00;		//设置要写入的内存地址为0x8c00
-	readSect((void*)va, sceno);
-	
-	asm volatile("jmp 0x8c00");		//跳转到刚刚写入代码的位置执行
-	while(1);						//无限循环
+	/* 加载内核至内存，并跳转执行 */
+	int KernelSize = SECTSIZE * SectNum;
+	unsigned char buf[KernelSize];
+	for(int i =0;i < SectNum;++i)
+		readSect(buf + i * SECTSIZE, i+1);
+	struct ELFHeader *elf = (void *)buf;
+	struct ProgramHeader *ph = (void *)elf + elf->phoff;
+	for(int i = elf->phnum; i > 0; --i)
+	{
+		memcpy((void *)ph->vaddr, buf + ph->off, ph->filesz);
+		memset((void *)ph->vaddr + ph->filesz, 0, ph->memsz - ph->filesz);
+		ph = (void *)ph + elf->phentsize;
+	}
+	p_kern = (void *)elf->entry;
+	p_kern();
 }
 
 void waitDisk(void) { // waiting for disk
 	while((inByte(0x1F7) & 0xC0) != 0x40);
 }
 
-//其中*dst为要写入的内存地址，offset为磁盘扇区号
-void readSect(void *dst, int offset) { // reading one sector of disk
+void readSect(void *dst, int offset) { // reading a sector of disk
 	int i;
 	waitDisk();
 	outByte(0x1F2, 1);
@@ -31,8 +38,7 @@ void readSect(void *dst, int offset) { // reading one sector of disk
 	outByte(0x1F7, 0x20);
 
 	waitDisk();
-
-	for (i = 0; i < SECTSIZE / 4; i ++) {//一个扇区512字节，每次inlong读取4个字节写入内存
+	for (i = 0; i < SECTSIZE / 4; i ++) {
 		((int *)dst)[i] = inLong(0x1F0);
 	}
 }
