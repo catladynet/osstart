@@ -1,5 +1,7 @@
 # os
 <br>
+接下来代码框架中，再次分出两个文件夹：kernel和app。
+kernel为内核代码，app为用户程序。
 
 <h3>代码框架 Frame</h3>
 <pre><code>

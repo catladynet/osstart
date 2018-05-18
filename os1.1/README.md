@@ -1,4 +1,4 @@
-# OSstart1
+# OS
 a simple os boot sector<br>
 在代码所在目录下终端下运行：<br>
 $ make<br>
