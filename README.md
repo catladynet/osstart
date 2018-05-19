@@ -7,7 +7,7 @@
 
 ### Chapter 1
 主要内容：保护模式、全局描述符表、加载磁盘文件<br>
-<h4>[OS1.1](https://github.com/catladynet/osstart/tree/master/os1.1)</h4> ： 实模式<br>
+<h4>[OS1.1]</h4>(https://github.com/catladynet/osstart/tree/master/os1.1) ： 实模式<br>
 <h4>[OS1.2](https://github.com/catladynet/osstart/tree/master/os1.2)</h4> ： 跳入保护模式<br>
 <h4>[OS1.3](https://github.com/catladynet/osstart/tree/master/os1.3)</h4> ： 加载磁盘映像到内存<br>
 <h4>[OS1.4](https://github.com/catladynet/osstart/tree/master/os1.4)</h4> ： 初探ELF文件<br>
