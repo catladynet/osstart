@@ -1,4 +1,4 @@
-# os
+# os2.1
 本节目标：初始化中断描述符表<br>
 
 中断描述符表IDT和GDT类似，芯片通过一个特定寄存器idtr保存IDT表的初始物理地址。因此中断描述符表可以放在内存的任意位置，使用汇编指令lidt可以将中断表的物理地址保存到idtr寄存器。
@@ -15,7 +15,6 @@ IDT中共需要设置256个中断描述符，每项描述符占8字节，这8个
 
 对于硬件中断，我们在驱动程序中进行初始化的时候，要做到硬件发出的中断信号IRQ线与一个具体的中断向量对应，并且使该中断处理例程绑定该中断向量。这样在将来处理中断的时候，一个具体IRQ线发出的中断信号才能被某个中断处理程序识别并接管。
 
-
 本节我们用c语言和内联汇编相结合的方式，实现在内核代码中初始化中断描述符表。
 
 
@@ -28,23 +27,28 @@ IDT中共需要设置256个中断描述符，每项描述符占8字节，这8个
 |   |---genKernel.pl        #生成内核程序
 |---+kernel
 |   |---+include            #头文件
-|   |---+kercode            #内核代码
+|   |---+kernel            #内核代码
 |   |   |---i8259.c         #重设主从8259A
 |   |   |---idt.c           #初始化中断描述表
 |   |   |---serial.c        #初始化串口输出
-|   |---+lib
+|   |---+lib                #库文件
 |   |---main.c              #主函数
 |   |---Makefile
 |---Makefile</code></pre>
 
-bootloader文件夹为第一扇区引导程序（bootsector），我们用它来加载kernel。
-kernel文件夹为内核代码区，分为include头文件夹、kernel内核主要代码文件夹、lib库函数文件夹以及main.c主程序代码。
-本节实验只需关注kernel文件夹。
+bootloader文件夹为第一扇区引导程序（bootsector），我们用它来加载kernel。我们在第一章中已经详细介绍过了，以后不再赘述。
+
+kernel文件夹为内核代码区，本实验只需关注该文件夹。
+
 阅读顺序：main.c -> kercode/idt.c -> include
-main.c中使用的函数定义在kercode中。
+
+main.c中使用的函数定义在kernel中。
+
 通用的函数、封装汇编代码的函数、全局常量和数据结构 定义在头文件include中。
+
 include惯例如下：include文件主目录下每一个.h文件对应一个同名文件夹，主目录的.h文件通过include方式对同名文件夹下的.h文件进行封装。具体可查阅kernel/include/common.h文件。
-<h4>include代码框架 Frame</h4>
+
+<h4>INCLUDE代码框架</h4>
 <pre><code>
 |---+include            
 |   |---+common
@@ -62,3 +66,29 @@ include惯例如下：include文件主目录下每一个.h文件对应一个同�
 |   |---device.h         #设备相关
 |   |---x86.h            #x86指令体系相关，包括数据结构、内联汇编
 </code></pre>
+
+在include/x86/memory.h中定义了中断描述符的数据结构：
+<pre><code>
+struct GateDescriptor {
+	uint32_t offset_15_0      : 16;
+	uint32_t segment          : 16;
+	uint32_t pad0             : 8;
+	uint32_t type             : 4;
+	uint32_t system           : 1;
+	uint32_t privilege_level  : 2;
+	uint32_t present          : 1;
+	uint32_t offset_31_16     : 16;
+};<pre><code>
+
+在kernel/idt.c中：
+
+定义了一个长度为256的中断描述符数组，
+<pre><code>
+struct GateDescriptor idt[NR_IRQ];
+<pre><code>
+接着定义了初始化中断门和陷阱门的两个函数，setIntr()和setTrap()，这两个函数接受四个参数：描述符位置、段选择子、段内偏移量、特权级。段内偏移量即为中断处理函数的逻辑地址。
+
+最后在initIdt()中填充256个中断描述符，并用函数saveIdt()将加载中断描述符的内存地址到芯片寄存器中。
+
+至此，我们实现了初始化中断描述表IDT，并用空函数填充每一个中断服务例程的目标
+

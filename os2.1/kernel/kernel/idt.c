@@ -31,26 +31,16 @@ static void setTrap(struct GateDescriptor *ptr, uint32_t selector, uint32_t offs
 	ptr->offset_31_16 = (offset >> 16) & 0xFFFF;
 }
 
-/* 声明函数，这些函数在汇编代码里定义 */
+/* 声明函数，这些函数在汇编代码doirq.s里定义 */
 void irqEmpty();
-void irqGProtectFault();
-void irqSyscall();
 
 void initIdt() {
 	int i;
-	/* 为了防止系统异常终止，所有irq都有处理函数(irqEmpty)。 */
+	/* 为了防止系统异常终止，为所有irq都有空处理函数(irqEmpty)。 */
 	for (i = 0; i < NR_IRQ; i ++) {
 		setTrap(idt + i, SEG_KCODE, (uint32_t)irqEmpty, DPL_KERN);
 	}
-	/*
-	 * init your idt here
-	 * 初始化 IDT 表, 为中断设置中断处理函数
-	 */
 	
-	setTrap(idt + 0xd, SEG_KCODE, (uint32_t)irqGProtectFault, DPL_KERN);
-	
-	setIntr(idt + 0x80, SEG_KCODE, (uint32_t)irqSyscall, DPL_USER); // for int 0x80, interrupt vector is 0x80, Interruption is disabled
-
 	/* 写入IDT */
 	saveIdt(idt, sizeof(idt));
 }
