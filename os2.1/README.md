@@ -78,14 +78,14 @@ struct GateDescriptor {
 	uint32_t privilege_level  : 2;
 	uint32_t present          : 1;
 	uint32_t offset_31_16     : 16;
-};<pre><code>
+};</code></pre>
 
 在kernel/idt.c中：
 
 定义了一个长度为256的中断描述符数组，
 <pre><code>
 struct GateDescriptor idt[NR_IRQ];
-<pre><code>
+</code></pre>
 接着定义了初始化中断门和陷阱门的两个函数，setIntr()和setTrap()，这两个函数接受四个参数：描述符位置、段选择子、段内偏移量、特权级。段内偏移量即为中断处理函数的逻辑地址。
 
 最后在initIdt()中填充256个中断描述符，并用函数saveIdt()将加载中断描述符的内存地址到芯片寄存器中。
