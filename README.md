@@ -4,15 +4,15 @@
 每章节实现一个总体目标，章节里每一小节增加一小部分内容<br>
 查看每个文件夹的教程README<br>
 
-###Chapter 1
-主要内容：保护模式、全局描述符表、加载磁盘文件
+### Chapter 1
+主要内容：保护模式、全局描述符表、加载磁盘文件<br>
 [OS1.1](https://github.com/catladynet/osstart/tree/master/os1.1) 实模式<br>
 [OS1.2](https://github.com/catladynet/osstart/tree/master/os1.2) 跳入保护模式<br>
 [OS1.3](https://github.com/catladynet/osstart/tree/master/os1.3) 加载磁盘映像到内存<br>
 [OS1.4](https://github.com/catladynet/osstart/tree/master/os1.4) 初探ELF文件<br>
 
-###Chapter 2
-主要内容：中断描述符表、系统调用
+### Chapter 2
+主要内容：中断描述符表、系统调用<br>
 [OS2.1](https://github.com/catladynet/osstart/tree/master/os2.1) 初始化中断描述符表<br>
 
 #### 实验环境
